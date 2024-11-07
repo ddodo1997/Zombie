@@ -53,7 +53,7 @@ void UiUpgrade::Release()
 void UiUpgrade::Reset()
 {
 	backGround.setTexture(TEXTURE_MGR.Get("graphics/background.png"));
-	float textSize = 100.f;
+	int textSize = 100;
 	sf::Vector2f textPos({ 200.f, 250.f });
 	for (int i = 0; i < TotalUpgrades; i++)
 	{

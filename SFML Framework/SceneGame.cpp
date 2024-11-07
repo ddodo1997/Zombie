@@ -47,11 +47,10 @@ void SceneGame::Enter()
 
 	uiGameover->SetActive(false);
 
-	SetStatus(Status::Awake);
 
 	Scene::Enter();
 
-	uiHud->SetCenter("Enter TO START...");
+	SetStatus(Status::Awake);
 }
 
 void SceneGame::Exit()
@@ -130,10 +129,18 @@ void SceneGame::UpdateWave(float dt)
 	{
 		SetStatus(Status::Upgrade);
 	}
-	if (itemMaker->GetFlag())
+
+	makeTimer += dt;
+	if (makeTimer > makeDelay)
+	{
+		makeFlag = true;
+		makeTimer = 0.f;
+	}
+
+	if (makeFlag)
 	{
 		itemMaker->MakeItem(tileMap->GetGlobalBounds(), 3);
-		itemMaker->SetFlag(false);
+		makeFlag = false;
 	}
 
 	if (GetNumOfZombies() == 0)
@@ -224,8 +231,11 @@ void SceneGame::SetStatus(Status status)
 			currentWave = 0;
 			upgradeCount = 0;
 			intervalTimer = 10.f;
+			makeFlag = false;
+			makeTimer = 0.f;
 			player->Awake();
 		}
+		uiHud->SetCenter("Enter TO START...");
 		break;
 	case Status::Wave:
 		uiHud->SetCenter("");

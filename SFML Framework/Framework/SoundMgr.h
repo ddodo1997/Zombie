@@ -26,7 +26,7 @@ public:
 		bgm.setVolume(bgmVolume);
 	}
 
-	void Init(int totalChannels = 32);
+	void Init(int totalChannels = 64);
 	void Release();
 	void Update(float dt);
 

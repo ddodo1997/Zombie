@@ -130,6 +130,7 @@ void Player::Update(float dt)
 			value = 0.f;
 		}
 		reloadingBar.setSize({ reloadingBarSize.x * value , reloadingBarSize.y });
+
 		if (reloadDelay <= reloadTimer)
 		{
 			Reloading();
@@ -146,7 +147,10 @@ void Player::Update(float dt)
 	if (InputMgr::GetKeyDown(sf::Keyboard::R))
 	{
 		if (ammo < maxAmmo + upgradeClipSize && spareAmmo > 0)
+		{
+			SOUND_MGR.PlaySfx("sound/reload.wav");
 			isReloading = true;
+		}
 	}
 
 	shootTimer += dt;
@@ -159,6 +163,7 @@ void Player::Update(float dt)
 		else
 		{
 			SOUND_MGR.PlaySfx("sound/reload.wav");
+			shootTimer = 0.f;
 			isReloading = true;
 		}
 	}
@@ -175,30 +180,31 @@ void Player::SetWeapon(Weapon weapon)
 		speed = 500.f;
 		reloadDelay = 2.f;
 		shootDelay = 0.5f;
-		maxAmmo = 6;
+		maxAmmo = 6 + upgradeClipSize;
 		spareAmmo = 10;
-		ammo = maxAmmo + upgradeClipSize;
+		ammo = maxAmmo ;
 		break;
 
 	case Weapon::Assault:
 		speed = 700.f;
 		reloadDelay = 4.f;
 		shootDelay = 0.05f;
-		maxAmmo = 60;
+		maxAmmo = 60 + upgradeClipSize;
 		spareAmmo = 100;
-		ammo = maxAmmo + upgradeClipSize;
+		ammo = maxAmmo;
 		break;
 
 	case Weapon::ShotGun:
 		speed = 400.f;
 		reloadDelay = 5.f;
 		shootDelay = 1.f;
-		maxAmmo = 2;
+		maxAmmo = 2 + upgradeClipSize;
 		spareAmmo = 5;
-		ammo = maxAmmo + upgradeClipSize;
+		ammo = maxAmmo;
 		break;
 	}
-	reloadTimer = reloadDelay;
+	if (isReloading)
+		reloadTimer = reloadDelay;
 }
 
 void Player::FixedUpdate(float dt)
@@ -253,7 +259,6 @@ void Player::Draw(sf::RenderWindow& window)
 
 bool Player::Shoot()
 {
-
 	switch (currentWeapon)
 	{
 	case Weapon::Pistol:
@@ -278,8 +283,10 @@ bool Player::ShootPistol()
 	if (ammo <= 0)
 	{
 		if (spareAmmo <= 0)
+		{
+			SOUND_MGR.PlaySfx("sound/reload_failed.wav");
 			return needReloading;
-
+		}
 		needReloading = true;
 		return needReloading;
 	}
@@ -298,8 +305,10 @@ bool Player::ShootAssault()
 	if (ammo <= 0)
 	{
 		if (spareAmmo <= 0)
+		{
+			SOUND_MGR.PlaySfx("sound/reload_failed.wav");
 			return needReloading;
-
+		}
 		needReloading = true;
 		return needReloading;
 	}
@@ -319,8 +328,10 @@ bool Player::ShootShotGun()
 	if (ammo <= 0)
 	{
 		if (spareAmmo <= 0)
+		{
+			SOUND_MGR.PlaySfx("sound/reload_failed.wav");
 			return needReloading;
-
+		}
 		needReloading = true;
 		return needReloading;
 	}
@@ -328,7 +339,7 @@ bool Player::ShootShotGun()
 	for (int i = 0; i < 13; i++)
 	{
 		Bullet* bullet = sceneGame->TakeBullet();
-		auto rand1 = Utils::RandomRange(0.5f, 1.f);
+		auto rand1 = Utils::RandomRange(0.3f, 1.f);
 		auto rand2 = Utils::RandomRange(0.7f, 0.8f);
 		bullet->Fire(position, { look.x * rand1, look.y * rand2 }, 1000.f, 10);
 	}
@@ -337,33 +348,28 @@ bool Player::ShootShotGun()
 
 void Player::Reloading()
 {
-	if (spareAmmo > 0)
+	if (spareAmmo < maxAmmo + upgradeClipSize)
 	{
-		if (spareAmmo < maxAmmo + upgradeClipSize)
+		int tempAmmo = maxAmmo + upgradeClipSize - ammo;
+		ammo += spareAmmo;
+		if (ammo > maxAmmo + upgradeClipSize)
 		{
-			int tempAmmo = maxAmmo + upgradeClipSize - ammo;
-			ammo += spareAmmo;
-			if (ammo > maxAmmo + upgradeClipSize)
-			{
-				ammo = maxAmmo + upgradeClipSize;
-				spareAmmo -= tempAmmo;
-			}
-			else
-			{
-				spareAmmo = 0;
-			}
+			ammo = maxAmmo + upgradeClipSize;
+			spareAmmo -= tempAmmo;
 		}
 		else
 		{
-			spareAmmo += ammo - maxAmmo + upgradeClipSize;
-			ammo = maxAmmo + upgradeClipSize;
+			spareAmmo = 0;
 		}
-		needReloading = false;
-		isReloading = false;
-		return;
 	}
-	//TODO : 장전 할 탄약이 부족할 경우
-	SOUND_MGR.PlaySfx("sound/reload_failed.wav");
+	else
+	{
+		spareAmmo += ammo - maxAmmo + upgradeClipSize;
+		ammo = maxAmmo + upgradeClipSize;
+	}
+	needReloading = false;
+	isReloading = false;
+	return;
 }
 
 void Player::OnDamege(int damage)
@@ -381,7 +387,7 @@ void Player::Awake()
 {
 	SetPosition({ 0.f,0.f });
 	SetOrigin(Origins::MC);
-	SetWeapon(Weapon::Pistol);
+	SetWeapon(Weapon::ShotGun);
 	reloadTimer = 0.f;
 	maxHp = 50;
 	hp = maxHp + upgradeMaxHp;

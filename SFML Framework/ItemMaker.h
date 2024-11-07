@@ -7,11 +7,6 @@ protected:
 
 	std::list<Item*> activeItems;
 	ObjectPool<Item> itemPool;
-
-	float makeDelay = 10.0f;
-	float makeTimer = 0.f;
-
-	bool makeFlag = false;
 public:
 	ItemMaker(const std::string& name = "");
 	~ItemMaker() = default;
@@ -30,8 +25,6 @@ public:
 	void Draw(sf::RenderWindow& window) override;
 
 	void MakeItem(const sf::FloatRect& area, int count);
-	void SetFlag(bool makeFlag) { this->makeFlag = makeFlag; }
-	bool GetFlag() const { return makeFlag; }
 
 	const std::list<Item*>& GetActiveItems() { return activeItems; }
 	void OnCatchItem(Item* item);

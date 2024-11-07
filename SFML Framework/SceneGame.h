@@ -48,6 +48,9 @@ protected:
 	float intervalTimer = 10.f;
 	float IntervalDelay = 0.f;
 
+	float makeDelay = 10.0f;
+	float makeTimer = 0.f;
+	bool makeFlag = false;
 	int upgradeCount = 0;
 public:
 	SceneGame();

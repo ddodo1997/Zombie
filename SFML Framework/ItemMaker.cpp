@@ -56,19 +56,10 @@ void ItemMaker::Reset()
 		itemPool.Return(item);
 	}
 	activeItems.clear();
-
-	makeTimer = 0.f;
-	makeFlag = false;
 }
 
 void ItemMaker::Update(float dt)
 {
-	makeTimer += dt;
-	if (makeTimer > makeDelay)
-	{
-		makeFlag = true;
-		makeTimer = 0.f;
-	}
 }
 
 void ItemMaker::Draw(sf::RenderWindow& window)
