@@ -66,27 +66,27 @@ void Player::Reset()
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
 	body.setTexture(TEXTURE_MGR.Get(texPlayerId));
 	collisionBox.setSize({ body.getLocalBounds().width, body.getLocalBounds().height });
-	SetPosition({ 0.f,0.f });
-	SetOrigin(Origins::MC);
 	itemMaker = sceneGame->GetMaker();
 	TileMap* map = sceneGame->GetMap();
 	sf::FloatRect mapBounds = map->GetGlobalBounds();
-	movalbeArea = { 
+	movalbeArea = {
 		mapBounds.left + map->GetCellSize().x,
-		mapBounds.top + map->GetCellSize().y, 
+		mapBounds.top + map->GetCellSize().y,
 		mapBounds.width - map->GetCellSize().x - map->GetCellSize().y,
 		mapBounds.height - map->GetCellSize().x - map->GetCellSize().y
 	};
-	ammo = maxAmmo;
-	hp = maxHp;
-	isAlive = true;
+
 	reloadingBar.setFillColor(sf::Color::Green);
 	reloadingBar.setSize({ 0.f,0.f });
+	reloadingBar.setOutlineColor(sf::Color::Transparent);
+	reloadingBar.setOutlineThickness(2.f);
+
+	Awake();
 }
 
 void Player::Update(float dt)
 {
-	if (!isAlive)
+	if (!isAlive || sceneGame->GetCurrentStatus() == SceneGame::Status::Pause)
 		return;
 
 	direction.x = InputMgr::GetAxis(Axis::Horizontal);
@@ -96,7 +96,7 @@ void Player::Update(float dt)
 	{
 		Utils::Normailize(direction);
 	}
-	auto newPos = position + direction * speed * dt;
+	auto newPos = position + direction * (speed + upgradeRunSpeed) * dt;
 
 	if (newPos.x < movalbeArea.left)
 	{
@@ -121,13 +121,15 @@ void Player::Update(float dt)
 
 	if (isReloading)
 	{
+		reloadingBar.setOutlineColor(sf::Color::Black);
+
 		reloadTimer += dt;
 		float value = (float)reloadTimer / reloadDelay;
 		if (value < 0.f)
 		{
 			value = 0.f;
 		}
-		reloadingBar.setSize({ reloadingBarSize.x * value , reloadingBarSize.y});
+		reloadingBar.setSize({ reloadingBarSize.x * value , reloadingBarSize.y });
 		if (reloadDelay <= reloadTimer)
 		{
 			Reloading();
@@ -143,27 +145,65 @@ void Player::Update(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::R))
 	{
-		if(ammo != 6)
+		if (ammo < maxAmmo + upgradeClipSize && spareAmmo > 0)
 			isReloading = true;
 	}
 
 	shootTimer += dt;
-	if (shootTimer > shootDelay && InputMgr::GetMouseButtonDown(sf::Mouse::Left))
+	if (shootTimer > shootDelay - upgradeFireRate && InputMgr::GetMouseButton(sf::Mouse::Left))
 	{
-		if(!Shoot())
+		if (!Shoot())
 		{
 			shootTimer = 0.f;
 		}
 		else
 		{
+			SOUND_MGR.PlaySfx("sound/reload.wav");
 			isReloading = true;
 		}
 	}
 }
 
+void Player::SetWeapon(Weapon weapon)
+{
+	prevWeapon = currentWeapon;
+	currentWeapon = weapon;
+
+	switch (currentWeapon)
+	{
+	case Weapon::Pistol:
+		speed = 500.f;
+		reloadDelay = 2.f;
+		shootDelay = 0.5f;
+		maxAmmo = 6;
+		spareAmmo = 10;
+		ammo = maxAmmo + upgradeClipSize;
+		break;
+
+	case Weapon::Assault:
+		speed = 700.f;
+		reloadDelay = 4.f;
+		shootDelay = 0.05f;
+		maxAmmo = 60;
+		spareAmmo = 100;
+		ammo = maxAmmo + upgradeClipSize;
+		break;
+
+	case Weapon::ShotGun:
+		speed = 400.f;
+		reloadDelay = 5.f;
+		shootDelay = 1.f;
+		maxAmmo = 2;
+		spareAmmo = 5;
+		ammo = maxAmmo + upgradeClipSize;
+		break;
+	}
+	reloadTimer = reloadDelay;
+}
+
 void Player::FixedUpdate(float dt)
 {
-	if (sceneGame == nullptr || !isAlive)
+	if (sceneGame == nullptr || !isAlive || sceneGame->GetCurrentStatus() == SceneGame::Status::Pause)
 		return;
 
 	const auto& list = itemMaker->GetActiveItems();
@@ -177,18 +217,26 @@ void Player::FixedUpdate(float dt)
 		sf::FloatRect bounds = GetGlobalBounds();
 		if (bounds.intersects(itemBounds))
 		{
+
+			SOUND_MGR.PlaySfx("sound/pickup.wav");
 			Item::Types type = item->GetType();
 			switch (type)
 			{
 			case Item::Types::Ammo:
-				spareAmmo += pickAmmo;
-				if (spareAmmo > 99)
-					spareAmmo = 99;
+				spareAmmo += pickAmmo + upgradePickAmmo;
+				if (spareAmmo > 500)
+					spareAmmo = 500;
 				break;
 			case Item::Types::AID:
-				hp += healHp;
-				if (hp > maxHp)
-					hp = maxHp;
+				hp += healHp + upgradeHealing;
+				if (hp > maxHp + upgradeMaxHp)
+					hp = maxHp + upgradeMaxHp;
+				break;
+			case Item::Types::AssaultRifle:
+				SetWeapon(Weapon::Assault);
+				break;
+			case Item::Types::ShotGun:
+				SetWeapon(Weapon::ShotGun);
 				break;
 			}
 			itemMaker->OnCatchItem(item);
@@ -205,12 +253,33 @@ void Player::Draw(sf::RenderWindow& window)
 
 bool Player::Shoot()
 {
+
+	switch (currentWeapon)
+	{
+	case Weapon::Pistol:
+		needReloading = ShootPistol();
+		break;
+	case Weapon::Assault:
+		needReloading = ShootAssault();
+		break;
+	case Weapon::ShotGun:
+		needReloading = ShootShotGun();
+		break;
+	}
+	return needReloading;
+}
+
+bool Player::ShootPistol()
+{
 	if (isReloading == true)
 	{
 		return needReloading;
 	}
 	if (ammo <= 0)
 	{
+		if (spareAmmo <= 0)
+			return needReloading;
+
 		needReloading = true;
 		return needReloading;
 	}
@@ -220,20 +289,64 @@ bool Player::Shoot()
 	return needReloading;
 }
 
+bool Player::ShootAssault()
+{
+	if (isReloading == true)
+	{
+		return needReloading;
+	}
+	if (ammo <= 0)
+	{
+		if (spareAmmo <= 0)
+			return needReloading;
+
+		needReloading = true;
+		return needReloading;
+	}
+	ammo -= 1;
+	Bullet* bullet = sceneGame->TakeBullet();
+	auto rand = Utils::RandomRange(0.f, 1.f);
+	bullet->Fire(position, { look.x * rand, look.y }, 1000.f, 7);
+	return needReloading;
+}
+
+bool Player::ShootShotGun()
+{
+	if (isReloading == true)
+	{
+		return needReloading;
+	}
+	if (ammo <= 0)
+	{
+		if (spareAmmo <= 0)
+			return needReloading;
+
+		needReloading = true;
+		return needReloading;
+	}
+	ammo -= 1;
+	for (int i = 0; i < 13; i++)
+	{
+		Bullet* bullet = sceneGame->TakeBullet();
+		auto rand1 = Utils::RandomRange(0.5f, 1.f);
+		auto rand2 = Utils::RandomRange(0.7f, 0.8f);
+		bullet->Fire(position, { look.x * rand1, look.y * rand2 }, 1000.f, 10);
+	}
+	return needReloading;
+}
+
 void Player::Reloading()
 {
 	if (spareAmmo > 0)
 	{
-		if (spareAmmo < maxAmmo)
+		if (spareAmmo < maxAmmo + upgradeClipSize)
 		{
-			int tempAmmo = maxAmmo - ammo;
+			int tempAmmo = maxAmmo + upgradeClipSize - ammo;
 			ammo += spareAmmo;
-			if (ammo > maxAmmo)
+			if (ammo > maxAmmo + upgradeClipSize)
 			{
-				ammo = maxAmmo;
+				ammo = maxAmmo + upgradeClipSize;
 				spareAmmo -= tempAmmo;
-				if (spareAmmo < 0)
-					spareAmmo = 0;		//...? 코드에 찔려 죽겠는데
 			}
 			else
 			{
@@ -242,24 +355,43 @@ void Player::Reloading()
 		}
 		else
 		{
-			spareAmmo += ammo - maxAmmo;
-			ammo = maxAmmo;
+			spareAmmo += ammo - maxAmmo + upgradeClipSize;
+			ammo = maxAmmo + upgradeClipSize;
 		}
 		needReloading = false;
 		isReloading = false;
 		return;
 	}
 	//TODO : 장전 할 탄약이 부족할 경우
-	return;
+	SOUND_MGR.PlaySfx("sound/reload_failed.wav");
 }
 
 void Player::OnDamege(int damage)
 {
+	SOUND_MGR.PlaySfx("sound/hit.wav");
 	hp -= damage;
 	if (hp <= 0)
 	{
 		isAlive = false;
 		sceneGame->OnPlayerDie();
 	}
+}
+
+void Player::Awake()
+{
+	SetPosition({ 0.f,0.f });
+	SetOrigin(Origins::MC);
+	SetWeapon(Weapon::Pistol);
+	reloadTimer = 0.f;
+	maxHp = 50;
+	hp = maxHp + upgradeMaxHp;
+	isAlive = true;
+
+	upgradeFireRate = 0.f;
+	upgradeClipSize = 0;
+	upgradeMaxHp = 0;
+	upgradeRunSpeed = 0.f;
+	upgradeHealing = 0;
+	upgradePickAmmo = 0;
 }
 

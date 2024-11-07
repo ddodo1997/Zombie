@@ -167,7 +167,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SceneGame.cpp" />
     <ClCompile Include="SoundMgr.cpp" />
-    <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="Framework\TileMap.cpp" />
     <ClCompile Include="UiGameOver.cpp" />
     <ClCompile Include="UiHud.cpp" />
     <ClCompile Include="UiUpgrade.cpp" />
@@ -198,7 +198,7 @@
     <ClInclude Include="ItemMaker.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SceneGame.h" />
-    <ClInclude Include="SoundMgr.h" />
+    <ClInclude Include="Framework\SoundMgr.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="UiGameOver.h" />
     <ClInclude Include="UiHud.h" />

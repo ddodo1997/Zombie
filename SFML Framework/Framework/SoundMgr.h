@@ -34,8 +34,8 @@ public:
 	void PlayBgm(sf::SoundBuffer& buffer, bool loop = true);
 	void StopBgm();
 	
-	void PlaySfx(std::string id, bool loop = true);
-	void PlaySfx(sf::SoundBuffer& buffer, bool loop = true);
+	void PlaySfx(std::string id);
+	void PlaySfx(sf::SoundBuffer& buffer);
 
 	void SetSfxVolume(float v);
 	void StopAllSfx();

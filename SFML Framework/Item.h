@@ -6,9 +6,11 @@ public:
 	enum class Types
 	{
 		Ammo,
-		AID
+		AID,
+		AssaultRifle,
+		ShotGun,
 	};
-	static const int TotalItem = 2;
+	static const int TotalItem = 4;
 protected:
 	sf::Sprite body;
 	std::string texItemId;

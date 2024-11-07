@@ -3,9 +3,19 @@ class SceneGame;
 class ItemMaker;
 class Player : public GameObject
 {
+public:
+	enum class Weapon {
+		Pistol,
+		Assault,
+		ShotGun,
+	};
+
 protected:
 	sf::Sprite body;
 	std::string texPlayerId = "graphics/player.png";
+
+	Weapon currentWeapon = Weapon::Pistol;
+	Weapon prevWeapon = currentWeapon;
 
 	sf::Vector2f direction;
 	float speed = 500.f;
@@ -21,6 +31,15 @@ protected:
 	int pickAmmo = 6;
 	bool isAlive = true;
 	bool needReloading = false;
+
+	//TODO : 업그레이드시 올라갈 능력치 변수 따로 만들어서 계산하기.
+
+	float upgradeFireRate = 0.f;
+	int upgradeClipSize = 0;
+	int upgradeMaxHp = 0;
+	float upgradeRunSpeed = 0.f;
+	int upgradeHealing = 0;
+	int upgradePickAmmo = 0;
 
 	float shootDelay = 0.5f;
 	float shootTimer = 0.f;
@@ -49,10 +68,20 @@ public:
 	void Release() override;
 	void Reset() override;
 	void Update(float dt) override;
+	//Pistol
+	//Assault
+	//ShotGun
+
+	void SetWeapon(Weapon weapon);
+
 	void FixedUpdate(float dt) override;
 	void Draw(sf::RenderWindow& window) override;
 
 	bool Shoot();
+	bool ShootPistol();
+	bool ShootAssault();
+	bool ShootShotGun();
+
 	void Reloading();
 
 	void OnDamege(int damage);
@@ -62,13 +91,14 @@ public:
 	int GetHp() const { return hp; }
 	int GetMaxHp() const { return maxHp; }
 
+	void Awake();
 
-	void UpgradeFireRate(float fireRate) { shootDelay -= shootDelay / fireRate; }
-	void UpgradeClipSize(int size) { maxAmmo += size; }
-	void UpgradeMaxHp(int maxHp) { this->maxHp += maxHp; }
-	void UpgradeSpeed(float speed) { this->speed += speed; }
-	void UpgradeBullets(int bullets) { pickAmmo += bullets; }
-	void UpgradeHealing(int heal) { healHp += heal; }
+	void UpgradeFireRate(float fireRate) { upgradeFireRate += fireRate; }
+	void UpgradeClipSize(int size) { upgradeClipSize += size; }
+	void UpgradeMaxHp(int maxHp) { upgradeMaxHp += maxHp; }
+	void UpgradeSpeed(float speed) { upgradeRunSpeed += speed; }
+	void UpgradeBullets(int bullets) { upgradePickAmmo += bullets; }
+	void UpgradeHealing(int heal) { upgradeHealing += heal; }
 };
 
 

@@ -1,7 +1,6 @@
 #pragma once
 class Player;
 class SceneGame;
-class DebugBox;
 class Zombie : public GameObject
 {
 public:
@@ -17,6 +16,8 @@ protected:
 	sf::Sprite body;
 	std::string texZombieId;
 	sf::Vector2f direction;
+	sf::RectangleShape hpBar;
+	sf::Vector2f hpBarSize = { 75.f, 15.f };
 	Types types = Types::Bloater;
 	Player* player;
 
@@ -29,8 +30,6 @@ protected:
 	float attackTimer = 0.f;
 
 	SceneGame* sceneGame = nullptr;
-
-	DebugBox debugBox;
 
 	bool isNugget = false;
 	float nuggetDelay = 3.f;

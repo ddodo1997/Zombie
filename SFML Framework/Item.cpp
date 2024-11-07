@@ -76,6 +76,13 @@ void Item::SetType(Types type)
 	case Types::AID:
 		texItemId = "graphics/health_pickup.png";
 		break;
+	case Types::AssaultRifle:
+		texItemId = "graphics/assault_rifle.png";
+		body.setScale({ 0.1f,0.1f });
+		break;
+	case Types::ShotGun:
+		texItemId = "graphics/shotgun.png";
+		break;
 	}
 	body.setTexture(TEXTURE_MGR.Get(texItemId), true);
 }

@@ -66,17 +66,11 @@ void Bullet::Reset()
 	SetPosition({ 0.f,0.f });
 	SetScale({ 2.f,2.f });
 	SetRotation(0.f);
-
-	direction = { 0.f,0.f };
-	speed = 0.f;
-	damage = 100;
 }
 
 void Bullet::Update(float dt)
 {
 	SetPosition(position + direction * speed * dt);
-	debugBox.SetBounds(GetGlobalBounds());
-	debugBox.SetOutlineColor(sf::Color::Black);
 }
 
 void Bullet::FixedUpdate(float dt)
@@ -110,11 +104,11 @@ void Bullet::FixedUpdate(float dt)
 void Bullet::Draw(sf::RenderWindow& window)
 {
 	window.draw(body);
-	debugBox.Draw(window);
 }
 
 void Bullet::Fire(const sf::Vector2f& pos, const sf::Vector2f& direction, float speed, int damage)
 {
+	SOUND_MGR.PlaySfx("sound/shoot.wav");
 	SetPosition(pos);
 	this->direction = direction;
 	this->speed = speed;

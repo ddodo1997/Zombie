@@ -6,10 +6,14 @@ protected:
 	//상단
 	sf::Text textScore;
 	sf::Text textHighScore;
+	sf::Text textUpgrade;
+	//중앙
+	sf::Text textCenter;
 	//하단
 	sf::Sprite iconAmmo;
 	sf::Text textAmmo;
 	sf::RectangleShape gaugeHp;
+	sf::Text textInterval;
 	sf::Text textWave;
 	sf::Text textZombieCount;
 
@@ -35,7 +39,10 @@ public:
 	void Draw(sf::RenderWindow& window) override;
 
 	void SetScore(int s);
+	void SetUpgrade(int u);
 	void SetHiScore(int s);
+	void SetCenter(std::string str);
+	void SetInterval(int i);
 	void SetAmmo(int current, int total);
 	void SetHp(int hp, int max);
 	void SetWave(int w);

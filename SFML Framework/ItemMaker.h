@@ -8,7 +8,7 @@ protected:
 	std::list<Item*> activeItems;
 	ObjectPool<Item> itemPool;
 
-	float makeDelay = 1.0f;
+	float makeDelay = 10.0f;
 	float makeTimer = 0.f;
 
 	bool makeFlag = false;

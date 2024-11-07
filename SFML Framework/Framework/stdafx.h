@@ -24,3 +24,4 @@
 #include "Scene.h"
 #include "ObjectPool.h"
 #include "DebugBox.h"
+#include "SoundMgr.h"

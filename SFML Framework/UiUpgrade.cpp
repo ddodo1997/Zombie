@@ -94,7 +94,7 @@ void UiUpgrade::FixedUpdate(float dt)
 		{
 			if (Utils::PointInTransformBounds(textUpgrades[i], textUpgrades[i].getLocalBounds(), mousePos))
 			{
-				sceneGame->OnUpgrade(textUpgrades[i], i);
+				sceneGame->OnUpgrade(i);
 			}
 		}
 	}

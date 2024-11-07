@@ -11,8 +11,6 @@ protected:
 	int damage = 0;
 
 	SceneGame* sceneGame;
-
-	DebugBox debugBox;
 public:
 	Bullet(const std::string& name = "");
 	~Bullet() = default;

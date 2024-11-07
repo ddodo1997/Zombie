@@ -58,12 +58,12 @@ void SoundMgr::StopBgm()
 	bgm.stop();
 }
 
-void SoundMgr::PlaySfx(std::string id, bool loop)
+void SoundMgr::PlaySfx(std::string id)
 {
-	PlaySfx(SOUNDBUFFER_MGR.Get(id), loop);
+	PlaySfx(SOUNDBUFFER_MGR.Get(id));
 }
 
-void SoundMgr::PlaySfx(sf::SoundBuffer& buffer, bool loop)
+void SoundMgr::PlaySfx(sf::SoundBuffer& buffer)
 {
 	sf::Sound* sound = nullptr;
 
@@ -82,7 +82,6 @@ void SoundMgr::PlaySfx(sf::SoundBuffer& buffer, bool loop)
 
 	sound->setVolume(sfxVolume);
 	sound->setBuffer(buffer);
-	sound->setLoop(loop);
 	sound->play();
 
 	playing.push_back(sound);

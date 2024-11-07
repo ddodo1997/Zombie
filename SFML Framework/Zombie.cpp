@@ -70,15 +70,19 @@ void Zombie::Reset()
 	SetScale({ 1.f,1.f });
 	types = Types::Bloater;
 	SetType(types);
-	debugBox.SetOutlineColor(sf::Color::Green);
+	hpBar.setFillColor(sf::Color::Green);
+	hpBar.setSize(hpBarSize);
+	hpBar.setOutlineColor(sf::Color::Black);
+	hpBar.setOutlineThickness(2.f);
 }
 
 void Zombie::Update(float dt)
 {
 	if (isNugget)
 	{
+		hpBar.setOutlineColor(sf::Color::Transparent);
 		nuggetTimer += dt;
-		if(nuggetDelay < nuggetTimer)
+		if (nuggetDelay < nuggetTimer)
 		{
 			sceneGame->OnZombieDie(this);
 			nuggetTimer = 0;
@@ -93,7 +97,9 @@ void Zombie::Update(float dt)
 		SetRotation(Utils::Angle(direction));
 		SetPosition(position + direction * speed * dt);
 	}
-	debugBox.SetBounds(GetGlobalBounds());
+
+	auto newPos = position + direction * speed * dt;
+	hpBar.setPosition({ newPos.x - GetLocalBounds().width * 0.7f, newPos.y - GetLocalBounds().height });
 }
 
 void Zombie::FixedUpdate(float dt)
@@ -117,7 +123,7 @@ void Zombie::FixedUpdate(float dt)
 void Zombie::Draw(sf::RenderWindow& window)
 {
 	window.draw(body);
-	debugBox.Draw(window);
+	window.draw(hpBar);
 }
 
 void Zombie::SetType(Types types)
@@ -161,9 +167,29 @@ void Zombie::SetType(Types types)
 void Zombie::OnDamage(int damage)
 {
 	hp -= damage;
+	float value = (float)hp / maxHp;
+	if (value < 0.f)
+	{
+		value = 0.f;
+	}
+	hpBar.setSize({ hpBarSize.x * value , hpBarSize.y });
+
 	if (hp <= 0 && sceneGame != nullptr)
 	{
 		isNugget = true;
+		SOUND_MGR.PlaySfx("sound/splat.wav");
+		switch (types)
+		{
+		case Types::Bloater:
+			sceneGame->ScoreUp(500);
+			break;
+		case Types::Chaser:
+			sceneGame->ScoreUp(200);
+			break;
+		case Types::Crawler:
+			sceneGame->ScoreUp(100);
+			break;
+		}
 		SetType(Types::Nugget);
 	}
 }

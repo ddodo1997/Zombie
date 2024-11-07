@@ -8,6 +8,7 @@
 #include "UiHud.h"
 #include "UiUpgrade.h"
 #include "UiGameOver.h"
+int SceneGame::highScore = 0;
 SceneGame::SceneGame()
 	:Scene(SceneIds::Game)
 {
@@ -31,25 +32,31 @@ void SceneGame::Release()
 
 void SceneGame::Enter()
 {
+	SOUND_MGR.PlayBgm("sound/cunning_city.mp3");
 	FRAMEWORK.GetWindow().setMouseCursorVisible(false);
 	cursor.setTexture(TEXTURE_MGR.Get("graphics/crosshair.png"));
 	Utils::SetOrigin(cursor, Origins::MC);
 
 	sf::Vector2f size = FRAMEWORK.GetWindowSizeF();
 	FRAMEWORK.SetTimeScale(1.f);
-	worldView.setSize(FRAMEWORK.GetWindowSizeF());
+	worldView.setSize(size);
 	worldView.setCenter(0.f, 0.f);
 
 	uiView.setSize(size);
 	uiView.setCenter(size.x * 0.5f, size.y * 0.5f);
 
 	uiGameover->SetActive(false);
+
+	SetStatus(Status::Awake);
+
 	Scene::Enter();
+
+	uiHud->SetCenter("Enter TO START...");
 }
 
 void SceneGame::Exit()
 {
-
+	SOUND_MGR.StopBgm();
 	FRAMEWORK.GetWindow().setMouseCursorVisible(true);
 	for (auto zombie : activeZombies)
 	{
@@ -71,44 +78,177 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	cursor.setPosition(ScreenToUi(InputMgr::GetMousePosition()));
-	uiHud->SetScore(0);
-	uiHud->SetHiScore(0);
-	uiHud->SetAmmo(player->GetAmmo(), player->GetSpareAmmo());
-	uiHud->SetHp(player->GetHp(), player->GetMaxHp());
-	uiHud->SetWave(0);
-	uiHud->SetZombieCount(0);
-
+	UpdateUI();
 
 	if (player != nullptr)
 	{
 		worldView.setCenter(player->GetPosition());
 	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Enter))
-	{
-		SCENE_MGR.ChangeScene(SceneIds::Game);
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
-	{
-		SpawnZomies(20);
-	}
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::Num1))
+	switch (currentStatus)
 	{
-		itemMaker->SetActive(!itemMaker->IsActive());
-	}
+	case Status::Awake:
+		UpdateAwake(dt);
+		break;
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::Num2))
-	{
-		uiUpgrade->SetActive(!uiUpgrade->IsActive());
-	}
+	case Status::Wave:
+		UpdateWave(dt);
+		break;
 
-	if (itemMaker->GetFlag())
-	{
-		itemMaker->MakeItem(tileMap->GetGlobalBounds(), 5);
-		itemMaker->SetFlag(false);
+	case Status::Interval:
+		UpdateInterval(dt);
+		break;
+
+	case Status::Upgrade:
+		UpdateUpgrade(dt);
+		break;
+
+	case Status::Pause:
+		UpdatePause(dt);
+		break;
+
+	case Status::GameOver:
+		UpdateGameOver(dt);
+		break;
 	}
 
 	Scene::Update(dt);
+}
+
+void SceneGame::UpdateAwake(float dt)
+{
+	if (InputMgr::GetKeyDown(sf::Keyboard::Enter))
+	{
+		player->Awake();
+		SetStatus(Status::Wave);
+	}
+}
+
+void SceneGame::UpdateWave(float dt)
+{
+	if (InputMgr::GetKeyDown(sf::Keyboard::Tab) && upgradeCount > 0)
+	{
+		SetStatus(Status::Upgrade);
+	}
+	if (itemMaker->GetFlag())
+	{
+		itemMaker->MakeItem(tileMap->GetGlobalBounds(), 3);
+		itemMaker->SetFlag(false);
+	}
+
+	if (GetNumOfZombies() == 0)
+	{
+		upgradeCount++;
+		SetStatus(Status::Interval);
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
+	{
+		SetStatus(Status::Pause);
+	}
+}
+
+void SceneGame::UpdateInterval(float dt)
+{
+	intervalTimer -= dt;	
+	
+	if (InputMgr::GetKeyDown(sf::Keyboard::Tab) && upgradeCount > 0)
+	{
+		SetStatus(Status::Upgrade);
+	}
+	if (intervalTimer <= IntervalDelay)
+	{
+		SetStatus(Status::Wave);
+		intervalTimer = 10.f;
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
+	{
+		SetStatus(Status::Pause);
+	}
+}
+
+void SceneGame::UpdateUpgrade(float dt)
+{
+	FRAMEWORK.SetTimeScale(0.f);
+	uiUpgrade->SetActive(true);
+}
+
+void SceneGame::UpdatePause(float dt)
+{
+	FRAMEWORK.SetTimeScale(0.f);
+	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
+	{
+		SetStatus(prevStatus);
+	}
+}
+
+void SceneGame::UpdateGameOver(float dt)
+{
+	if (InputMgr::GetKeyDown(sf::Keyboard::Enter))
+	{
+		uiGameover->SetActive(false);
+		SCENE_MGR.ChangeScene(SceneIds::Game);
+	}
+}
+
+void SceneGame::UpdateUI()
+{
+	uiHud->SetScore(score);
+	uiHud->SetHiScore(highScore);
+	uiHud->SetUpgrade(upgradeCount);
+	uiHud->SetAmmo(player->GetAmmo(), player->GetSpareAmmo());
+	uiHud->SetHp(player->GetHp(), player->GetMaxHp());
+	uiHud->SetInterval((int)intervalTimer);
+	uiHud->SetWave(currentWave);
+	uiHud->SetZombieCount(GetNumOfZombies());
+}
+
+void SceneGame::SetStatus(Status status)
+{
+	auto windowSize = FRAMEWORK.GetWindowSizeF();
+	prevStatus = currentStatus;
+	currentStatus = status;
+
+	if (prevStatus == Status::Upgrade || prevStatus == Status::Pause || prevStatus == Status::GameOver)
+	{
+		FRAMEWORK.SetTimeScale(1.f);
+	}
+
+	switch (currentStatus)
+	{
+	case Status::Awake:
+		if (prevStatus == Status::GameOver)
+		{
+			uiGameover->SetActive(false);
+			score = 0;
+			currentWave = 0;
+			upgradeCount = 0;
+			intervalTimer = 10.f;
+			player->Awake();
+		}
+		break;
+	case Status::Wave:
+		uiHud->SetCenter("");
+		if (prevStatus != Status::Pause && prevStatus != Status::Upgrade)
+		{
+			currentWave++;
+			SpawnZomies(20 + currentWave * currentWave);
+		}
+		break;
+	case Status::Interval:
+		uiHud->SetCenter("");
+		break;
+	case Status::Upgrade:
+		uiHud->SetCenter("");
+		break;
+	case Status::Pause:
+		uiHud->SetCenter("ESC TO RESTART...");
+		break;
+	case Status::GameOver:
+		uiGameover->SetActive(true);
+		FRAMEWORK.SetTimeScale(0.f);
+		break;
+	}
 }
 
 void SceneGame::Draw(sf::RenderWindow& window)
@@ -155,6 +295,24 @@ void SceneGame::ReturnBullet(Bullet* bullet)
 	activeBullet.remove(bullet);
 }
 
+int SceneGame::GetNumOfZombies()
+{
+	int cnt = 0;
+	for (auto zombie : activeZombies)
+	{
+		if (zombie->GetType() != Zombie::Types::Nugget)
+			cnt++;
+	}
+	return cnt;
+}
+
+void SceneGame::ScoreUp(int score)
+{
+	this->score += score;
+	if (this->score > highScore)
+		highScore = this->score;
+}
+
 void SceneGame::OnZombieDie(Zombie* zombie)
 {
 	RemoveGo(zombie);
@@ -162,18 +320,20 @@ void SceneGame::OnZombieDie(Zombie* zombie)
 	activeZombies.remove(zombie);
 }
 
+
+
 void SceneGame::OnPlayerDie()
 {
-	uiGameover->SetActive(true);
-	FRAMEWORK.SetTimeScale(0.f);
+	SOUND_MGR.PlaySfx("sound/splat.wav");
+	SetStatus(Status::GameOver);
 }
 
-void SceneGame::OnUpgrade(sf::Text& text, int upgrade)
+void SceneGame::OnUpgrade(int upgrade)
 {
 	switch ((UiUpgrade::Upgrades)upgrade)
 	{
 	case UiUpgrade::Upgrades::FireRate:
-		player->UpgradeFireRate(10.f);
+		player->UpgradeFireRate(0.005f);
 		break;
 	case UiUpgrade::Upgrades::ClipSize:
 		player->UpgradeClipSize(2);
@@ -191,5 +351,8 @@ void SceneGame::OnUpgrade(sf::Text& text, int upgrade)
 		player->UpgradeBullets(2);
 		break;
 	}
+	SOUND_MGR.PlaySfx("sound/powerup.wav");
+	upgradeCount--;
+	SetStatus(prevStatus);
 	uiUpgrade->SetActive(false);
 }
