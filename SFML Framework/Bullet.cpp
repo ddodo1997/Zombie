@@ -71,6 +71,12 @@ void Bullet::Reset()
 void Bullet::Update(float dt)
 {
 	SetPosition(position + direction * speed * dt);
+	activeTimer += dt;
+	if (activeDelay < activeTimer)
+	{
+		sceneGame->ReturnBullet(this);
+		activeTimer = 0.f;
+	}
 }
 
 void Bullet::FixedUpdate(float dt)

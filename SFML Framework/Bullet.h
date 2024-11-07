@@ -10,6 +10,9 @@ protected:
 	float speed = 0.f;
 	int damage = 0;
 
+	float activeDelay = 5.f;
+	float activeTimer = 0.f;
+
 	SceneGame* sceneGame;
 public:
 	Bullet(const std::string& name = "");

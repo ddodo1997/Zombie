@@ -340,8 +340,8 @@ bool Player::ShootShotGun()
 	{
 		Bullet* bullet = sceneGame->TakeBullet();
 		auto rand1 = Utils::RandomRange(0.3f, 1.f);
-		auto rand2 = Utils::RandomRange(0.7f, 0.8f);
-		bullet->Fire(position, { look.x * rand1, look.y * rand2 }, 1000.f, 10);
+		auto rand2 = Utils::RandomRange(0.f, 0.1f);
+		bullet->Fire(position, { look.x * rand1, look.y}, 1000.f - (1000.f * rand2), 10);
 	}
 	return needReloading;
 }
@@ -385,19 +385,19 @@ void Player::OnDamege(int damage)
 
 void Player::Awake()
 {
-	SetPosition({ 0.f,0.f });
-	SetOrigin(Origins::MC);
-	SetWeapon(Weapon::ShotGun);
-	reloadTimer = 0.f;
-	maxHp = 50;
-	hp = maxHp + upgradeMaxHp;
-	isAlive = true;
-
 	upgradeFireRate = 0.f;
 	upgradeClipSize = 0;
 	upgradeMaxHp = 0;
 	upgradeRunSpeed = 0.f;
 	upgradeHealing = 0;
 	upgradePickAmmo = 0;
+
+	SetPosition({ 0.f,0.f });
+	SetOrigin(Origins::MC);
+	SetWeapon(Weapon::Pistol);
+	reloadTimer = 0.f;
+	maxHp = 50;
+	hp = maxHp;
+	isAlive = true;
 }
 
