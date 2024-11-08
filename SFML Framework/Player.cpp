@@ -197,7 +197,7 @@ void Player::SetWeapon(Weapon weapon)
 	case Weapon::ShotGun:
 		speed = 400.f;
 		reloadDelay = 5.f;
-		shootDelay = 1.f;
+		shootDelay = 0.3f;
 		maxAmmo = 2 + upgradeClipSize;
 		spareAmmo = 5;
 		ammo = maxAmmo;
@@ -314,8 +314,8 @@ bool Player::ShootAssault()
 	}
 	ammo -= 1;
 	Bullet* bullet = sceneGame->TakeBullet();
-	auto rand = Utils::RandomRange(0.f, 1.f);
-	bullet->Fire(position, { look.x * rand, look.y }, 1000.f, 7);
+	auto rand = Utils::RandomRange(-0.4f, 0.4f);
+	bullet->Fire(position, { look.x + rand, look.y + rand }, 1000.f, 7);
 	return needReloading;
 }
 
@@ -339,9 +339,9 @@ bool Player::ShootShotGun()
 	for (int i = 0; i < 13; i++)
 	{
 		Bullet* bullet = sceneGame->TakeBullet();
-		auto rand1 = Utils::RandomRange(0.3f, 1.f);
-		auto rand2 = Utils::RandomRange(0.f, 0.1f);
-		bullet->Fire(position, { look.x * rand1, look.y}, 1000.f - (1000.f * rand2), 10);
+		auto rand1 = Utils::RandomRange(-0.3f, 0.3f);
+		auto rand2 = Utils::RandomRange(-0.1f, 0.1f);
+		bullet->Fire(position, { look.x + rand1, look.y + rand2}, 1000.f - (1000.f * rand2), 10);
 	}
 	return needReloading;
 }
