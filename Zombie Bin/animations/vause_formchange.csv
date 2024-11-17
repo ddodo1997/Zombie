@@ -1,0 +1,13 @@
+ID,FPS,"LoopType(0:Single 1:Loop)"
+FormChange,10,0
+
+TEXTURE,LEFT,TOP,WIDTH,HEIGHT
+graphics/vause_sheet.png,112,0,32,8
+graphics/vause_sheet.png,112,8,32,8
+graphics/vause_sheet.png,112,16,32,8
+graphics/vause_sheet.png,112,24,32,8
+graphics/vause_sheet.png,112,32,32,8
+graphics/vause_sheet.png,112,40,32,8
+graphics/vause_sheet.png,112,48,32,8
+graphics/vause_sheet.png,112,56,32,8
+graphics/vause_sheet.png,112,64,32,8

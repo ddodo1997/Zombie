@@ -146,7 +146,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AniPlayer.cpp" />
+    <ClCompile Include="AniPlayer2.cpp" />
+    <ClCompile Include="Framework\Animator.cpp" />
+    <ClCompile Include="Framework\AnimationClip.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Framework\DataTableMgr.cpp" />
+    <ClCompile Include="Framework\DataTable.cpp" />
     <ClCompile Include="DebugBox.cpp" />
     <ClCompile Include="Framework\Framework.cpp" />
     <ClCompile Include="Framework\GameObject.cpp" />
@@ -164,26 +170,41 @@
     <ClCompile Include="Framework\Utils.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemMaker.cpp" />
+    <ClCompile Include="ItemTable.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SaveData.cpp" />
+    <ClCompile Include="SaveLoadMgr.cpp" />
     <ClCompile Include="SceneGame.cpp" />
-    <ClCompile Include="SoundMgr.cpp" />
+    <ClCompile Include="Framework\SoundMgr.cpp" />
     <ClCompile Include="Framework\TileMap.cpp" />
+    <ClCompile Include="Framework\StringTable.cpp" />
     <ClCompile Include="UiGameOver.cpp" />
     <ClCompile Include="UiHud.cpp" />
     <ClCompile Include="UiUpgrade.cpp" />
+    <ClCompile Include="Framework\Variables.cpp" />
+    <ClCompile Include="Vause.cpp" />
     <ClCompile Include="XXXGo.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Zombie.cpp" />
+    <ClCompile Include="ZombieTable.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AniPlayer.h" />
+    <ClInclude Include="AniPlayer2.h" />
+    <ClInclude Include="Framework\Animator.h" />
+    <ClInclude Include="Framework\AnimationClip.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Framework\DataTableMgr.h" />
+    <ClInclude Include="Framework\DataTable.h" />
     <ClInclude Include="DebugBox.h" />
     <ClInclude Include="Framework\Defines.h" />
     <ClInclude Include="Framework\Framework.h" />
     <ClInclude Include="Framework\GameObject.h" />
     <ClInclude Include="Framework\InputMgr.h" />
+    <ClInclude Include="Framework\json.hpp" />
     <ClInclude Include="Framework\ObjectPool.h" />
+    <ClInclude Include="Framework\rapidcsv.h" />
     <ClInclude Include="Framework\ResourceMgr.h" />
     <ClInclude Include="Framework\Scene.h" />
     <ClInclude Include="Framework\SceneDev1.h" />
@@ -196,17 +217,24 @@
     <ClInclude Include="Framework\Utils.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemMaker.h" />
+    <ClInclude Include="ItemTable.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SaveData.h" />
+    <ClInclude Include="SaveLoadMgr.h" />
     <ClInclude Include="SceneGame.h" />
     <ClInclude Include="Framework\SoundMgr.h" />
+    <ClInclude Include="Framework\StringTable.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="UiGameOver.h" />
     <ClInclude Include="UiHud.h" />
     <ClInclude Include="UiUpgrade.h" />
+    <ClInclude Include="Framework\Variables.h" />
+    <ClInclude Include="Vause.h" />
     <ClInclude Include="XXXGo.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Zombie.h" />
+    <ClInclude Include="ZombieTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

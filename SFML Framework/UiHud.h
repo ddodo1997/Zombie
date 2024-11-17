@@ -41,7 +41,7 @@ public:
 	void SetScore(int s);
 	void SetUpgrade(int u);
 	void SetHiScore(int s);
-	void SetCenter(std::string str);
+	void SetCenter(std::wstring str);
 	void SetInterval(int i);
 	void SetAmmo(int current, int total);
 	void SetHp(int hp, int max);

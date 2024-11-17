@@ -1,25 +1,24 @@
 #include "stdafx.h"
 #include "SceneDev2.h"
-
+#include "AniPlayer.h"
 SceneDev2::SceneDev2() : Scene(SceneIds::Dev2)
 {
 
 }
 
 void SceneDev2::Init()
-{	
-	auto text = AddGo(new TextGo("fonts/DS-DIGI.ttf", "Scene Name"));
+{
+	AddGo(new AniPlayer("AniTest"));
 
 	Scene::Init();
 
-	text->sortingLayer = SortingLayers::UI;
-	text->Set(25, sf::Color::White);
-	text->SetString("Dev 2");
 }
 
 void SceneDev2::Enter()
 {
 	Scene::Enter();
+	worldView.setCenter(0.f, 0.f);
+	worldView.setSize(FRAMEWORK.GetWindowSizeF());
 }
 
 void SceneDev2::Exit()
@@ -31,10 +30,7 @@ void SceneDev2::Update(float dt)
 {
 	Scene::Update(dt);
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
-	{
-		SCENE_MGR.ChangeScene(SceneIds::Dev1);
-	}
+
 }
 
 void SceneDev2::Draw(sf::RenderWindow& window)

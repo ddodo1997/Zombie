@@ -5,7 +5,7 @@
 void Framework::Init(int width, int height, const std::string& name)
 {
     FONT_MGR.Load("fonts/DS-DIGI.ttf");
-
+    DATATABLE_MGR.Init();
 	window.create(sf::VideoMode(width, height), name);
     Utils::Init();
     SCENE_MGR.Init();
@@ -18,7 +18,7 @@ void Framework::Do()
     while (window.isOpen())
     {
         sf::Time dt = clock.restart();
-        realDeltaTime = deltaTime = dt.asSeconds();
+        realDeltaTime = deltaTime = dt.asSeconds(); //500 * 0.031 
         deltaTime *= timeScale;
         realTime += realDeltaTime;
         time += deltaTime;

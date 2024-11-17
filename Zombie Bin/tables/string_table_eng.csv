@@ -1,0 +1,16 @@
+ID,English
+GameOver,PRESS ENTER TO CONTINUE
+Score,SCORE: 
+HighScore,HighScore: 
+CenterAwake,Enter To Start
+CenterPause,ESC To Restart
+UpgradeAlert,Tab To Upgrade
+Interval,PREPARE TO DIE 
+Wave,WAVE: 
+Zombies,Zombies: 
+UpgradeRateOfFire,1- INCREASED RATE OF FIRE
+UpgradeClipSize,2- INCREASED CLIP SIZE (NEXT RELOAD)
+UpgradeMaxHP,3- INCREASED MAX HEALTH
+UpgradeRunSpeed,4- INCREASED RUN SPEED
+UpgradeHPPickUp,5- MORE AND BETTER HEALTH PICKUPS
+UpgradeAmmoPickUp,6- MORE AND BETTER AMMO PICKUPS

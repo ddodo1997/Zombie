@@ -48,10 +48,10 @@ void UiGameOver::Release()
 void UiGameOver::Reset()
 {
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSizeF();
-	textGameover.setFont(FONT_MGR.Get("fonts/zombiecontrol.ttf"));
+	textGameover.setFont(FONT_MGR.Get("fonts/H2HDRM.TTF"));
 	textGameover.setCharacterSize(250.f);
 	textGameover.setFillColor(sf::Color::Red);
-	textGameover.setString("PRESS ENTER\nTO CONTINUE");
+	textGameover.setString(STRING_TABLE->Get("GameOver"));
 	Utils::SetOrigin(textGameover, Origins::MC);
 	textGameover.setPosition({windowSize.x * 0.5f, windowSize.y * 0.5f });
 	SetActive(false);

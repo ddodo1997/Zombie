@@ -35,6 +35,7 @@ public:
 	void Update(float dt) override;
 	void FixedUpdate(float dt)override;
 	void Draw(sf::RenderWindow& window) override;
+	void OnLocallize(Languages lang)override;
 
 	void SetText(sf::Text& text, Upgrades upgrade);
 };

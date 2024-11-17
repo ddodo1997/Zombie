@@ -2,6 +2,7 @@
 #include "Zombie.h"
 #include "Player.h"
 #include "SceneGame.h"
+#include "ZombieTable.h"
 Zombie::Zombie(const std::string& name)
 	: GameObject(name)
 {
@@ -129,37 +130,13 @@ void Zombie::Draw(sf::RenderWindow& window)
 void Zombie::SetType(Types types)
 {
 	this->types = types;
-	switch (this->types)
-	{
-	case Types::Bloater:
-		texZombieId = "graphics/bloater.png";
-		maxHp = 50;
-		attack = 10;
-		attackDelay = 2.f;
-		speed = 150.f;
-		break;
-	case Types::Chaser:
-		texZombieId = "graphics/chaser.png";
-		maxHp = 20;
-		attack = 5;
-		attackDelay = 0.5f;
-		speed = 300.f;
-		break;
-	case Types::Crawler:
-		texZombieId = "graphics/crawler.png";
-		maxHp = 10;
-		attack = 30;
-		attackDelay = 3.f;
-		speed = 50.f;
-		break;
-	case Types::Nugget:
-		texZombieId = "graphics/blood.png";
-		maxHp = 0;
-		attack = 0;
-		attackDelay = 0.f;
-		speed = 0.f;
-		break;
-	}
+	const auto& data = ZOMBIE_TABLE->Get(this->types);
+	texZombieId = data.texZombieId;
+	maxHp = data.maxHp;
+	attack = data.attack;
+	attackDelay = data.attackDelay;
+	speed = data.speed;
+
 	body.setTexture(TEXTURE_MGR.Get(texZombieId), true);
 	hp = maxHp;
 }
@@ -192,5 +169,19 @@ void Zombie::OnDamage(int damage)
 		}
 		SetType(Types::Nugget);
 	}
+}
+
+SaveZombie Zombie::GetSaveData() const
+{
+	return SaveZombie{(int)types,position,rotation,scale,hp};
+}
+
+void Zombie::LoadSaveData(const SaveZombie& data)
+{
+	SetType((Types)data.type);
+	SetPosition(data.position);
+	SetRotation(data.rotation);
+	SetScale(data.scale);
+	hp = data.hp;
 }
 

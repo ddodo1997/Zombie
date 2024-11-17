@@ -29,11 +29,11 @@ protected:
 	int hp = 0;
 	float attackTimer = 0.f;
 
-	SceneGame* sceneGame = nullptr;
-
 	bool isNugget = false;
 	float nuggetDelay = 3.f;
 	float nuggetTimer = 0.f;
+
+	SceneGame* sceneGame = nullptr;
 public:
 	Zombie(const std::string& name = "");
 	~Zombie() = default;
@@ -59,4 +59,7 @@ public:
 
 	void OnDamage(int damage);
 	Types GetType() const { return types; }
+
+	SaveZombie GetSaveData() const;
+	void LoadSaveData(const SaveZombie& data);
 };

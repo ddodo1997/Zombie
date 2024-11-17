@@ -6,6 +6,7 @@
 #include "ItemMaker.h"
 #include "Item.h"
 #include "Zombie.h"
+#include "ItemTable.h"
 Player::Player(const std::string& name)
 	: GameObject(name)
 {
@@ -58,7 +59,6 @@ void Player::Init()
 
 void Player::Release()
 {
-
 }
 
 void Player::Reset()
@@ -182,7 +182,7 @@ void Player::SetWeapon(Weapon weapon)
 		shootDelay = 0.5f;
 		maxAmmo = 6 + upgradeClipSize;
 		spareAmmo = 10;
-		ammo = maxAmmo ;
+		ammo = maxAmmo;
 		break;
 
 	case Weapon::Assault:
@@ -229,12 +229,12 @@ void Player::FixedUpdate(float dt)
 			switch (type)
 			{
 			case Item::Types::Ammo:
-				spareAmmo += pickAmmo + upgradePickAmmo;
+				spareAmmo += ITEM_TABLE->Get(Item::Types::Ammo).ammo + upgradePickAmmo;
 				if (spareAmmo > 500)
 					spareAmmo = 500;
 				break;
 			case Item::Types::AID:
-				hp += healHp + upgradeHealing;
+				hp += ITEM_TABLE->Get(Item::Types::AID).heal + upgradeHealing;
 				if (hp > maxHp + upgradeMaxHp)
 					hp = maxHp + upgradeMaxHp;
 				break;
@@ -314,7 +314,7 @@ bool Player::ShootAssault()
 	}
 	ammo -= 1;
 	Bullet* bullet = sceneGame->TakeBullet();
-	auto rand = Utils::RandomRange(-0.4f, 0.4f);
+	auto rand = Utils::RandomRange(-0.2f, 0.2f);
 	bullet->Fire(position, { look.x + rand, look.y + rand }, 1000.f, 7);
 	return needReloading;
 }
@@ -341,7 +341,7 @@ bool Player::ShootShotGun()
 		Bullet* bullet = sceneGame->TakeBullet();
 		auto rand1 = Utils::RandomRange(-0.3f, 0.3f);
 		auto rand2 = Utils::RandomRange(-0.1f, 0.1f);
-		bullet->Fire(position, { look.x + rand1, look.y + rand2}, 1000.f - (1000.f * rand2), 10);
+		bullet->Fire(position, { look.x + rand1, look.y + rand2 }, 1000.f - (1000.f * rand2), 10);
 	}
 	return needReloading;
 }
@@ -385,13 +385,6 @@ void Player::OnDamege(int damage)
 
 void Player::Awake()
 {
-	upgradeFireRate = 0.f;
-	upgradeClipSize = 0;
-	upgradeMaxHp = 0;
-	upgradeRunSpeed = 0.f;
-	upgradeHealing = 0;
-	upgradePickAmmo = 0;
-
 	SetPosition({ 0.f,0.f });
 	SetOrigin(Origins::MC);
 	SetWeapon(Weapon::Pistol);
@@ -400,4 +393,3 @@ void Player::Awake()
 	hp = maxHp;
 	isAlive = true;
 }
-

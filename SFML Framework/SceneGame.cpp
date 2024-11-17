@@ -8,7 +8,6 @@
 #include "UiHud.h"
 #include "UiUpgrade.h"
 #include "UiGameOver.h"
-int SceneGame::highScore = 0;
 SceneGame::SceneGame()
 	:Scene(SceneIds::Game)
 {
@@ -78,6 +77,37 @@ void SceneGame::Update(float dt)
 {
 	cursor.setPosition(ScreenToUi(InputMgr::GetMousePosition()));
 	UpdateUI();
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Num1))
+	{
+		SaveDataVC data;
+		for (auto zombie : activeZombies)
+		{
+			data.zombies.push_back(zombie->GetSaveData());
+		}
+		SAVELOAD_MGR.Save(data);
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::Num2))
+	{
+		for (auto zombie : activeZombies)
+		{
+			RemoveGo(zombie);
+			zombiePool.Return(zombie);
+		}
+		activeZombies.clear();
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::Num3))
+	{
+		SaveDataVC data = SAVELOAD_MGR.Load();
+		for (auto& data : data.zombies)
+		{
+			Zombie* newZombie = zombiePool.Take();
+			newZombie->LoadSaveData(data);
+
+			activeZombies.push_back(newZombie);
+			AddGo(newZombie);
+		}
+	}
 
 	if (player != nullptr)
 	{
@@ -235,10 +265,10 @@ void SceneGame::SetStatus(Status status)
 			makeTimer = 0.f;
 			player->Awake();
 		}
-		uiHud->SetCenter("Enter TO START...");
+		uiHud->SetCenter(STRING_TABLE->Get("CenterAwake"));
 		break;
 	case Status::Wave:
-		uiHud->SetCenter("");
+		uiHud->SetCenter(L"");
 		if (prevStatus != Status::Pause && prevStatus != Status::Upgrade)
 		{
 			currentWave++;
@@ -246,13 +276,13 @@ void SceneGame::SetStatus(Status status)
 		}
 		break;
 	case Status::Interval:
-		uiHud->SetCenter("");
+		uiHud->SetCenter(L"");
 		break;
 	case Status::Upgrade:
-		uiHud->SetCenter("");
+		uiHud->SetCenter(L"");
 		break;
 	case Status::Pause:
-		uiHud->SetCenter("ESC TO RESTART...");
+		uiHud->SetCenter(STRING_TABLE->Get("CenterPause"));
 		break;
 	case Status::GameOver:
 		uiGameover->SetActive(true);
@@ -329,8 +359,6 @@ void SceneGame::OnZombieDie(Zombie* zombie)
 	zombiePool.Return(zombie);
 	activeZombies.remove(zombie);
 }
-
-
 
 void SceneGame::OnPlayerDie()
 {

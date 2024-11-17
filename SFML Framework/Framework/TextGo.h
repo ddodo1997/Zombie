@@ -5,6 +5,7 @@ class TextGo : public GameObject
 protected:
 	std::string fontId;
 	sf::Text text;
+	std::string stringId;
 
 public:
 
@@ -19,13 +20,15 @@ public:
 	void SetScale(const sf::Vector2f& scale) override;
 
 	void Set(int size, const sf::Color& color = sf::Color::White);
-	void SetString(const std::string& str);
+	void SetString(const std::string& id);
 
 	void Init() override;
 	void Release() override;
 	void Reset() override;
 	void Update(float dt) override;
 	void Draw(sf::RenderWindow& window) override;
+	void OnLocallize(Languages lang) override;
+
 	void SetFillColor(sf::Color color) { text.setFillColor(color); }
 };
 

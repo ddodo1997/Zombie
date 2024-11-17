@@ -57,7 +57,7 @@ void UiUpgrade::Reset()
 	sf::Vector2f textPos({ 200.f, 250.f });
 	for (int i = 0; i < TotalUpgrades; i++)
 	{
-		textUpgrades[i].setFont(FONT_MGR.Get("fonts/zombiecontrol.ttf"));
+		textUpgrades[i].setFont(FONT_MGR.Get("fonts/H2HDRM.TTF"));
 		textUpgrades[i].setCharacterSize(textSize);
 		textUpgrades[i].setFillColor(sf::Color::White);
 		textUpgrades[i].setPosition({ textPos.x, textPos.y + 110 * i });
@@ -90,7 +90,7 @@ void UiUpgrade::FixedUpdate(float dt)
 			textUpgrades[i].setFillColor(sf::Color::White);
 		}
 		
-		if (InputMgr::GetMouseButton(sf::Mouse::Left))
+		if (InputMgr::GetMouseButton(sf::Mouse::Right))
 		{
 			if (Utils::PointInTransformBounds(textUpgrades[i], textUpgrades[i].getLocalBounds(), mousePos))
 			{
@@ -109,27 +109,33 @@ void UiUpgrade::Draw(sf::RenderWindow& window)
 	}
 }
 
+void UiUpgrade::OnLocallize(Languages lang)
+{
+	GameObject::OnLocallize(lang);
+	Reset();
+}
+
 void UiUpgrade::SetText(sf::Text& text, Upgrades upgrade)
 {
 	switch (upgrade)
 	{
 	case Upgrades::FireRate:
-		text.setString("1- INCREASED RATE OF FIRE");
+		text.setString(STRING_TABLE->Get("UpgradeRateOfFire"));
 		break;
 	case Upgrades::ClipSize:
-		text.setString("2- INCREASED CLIP SIZE (NEXT RELOAD)");
+		text.setString(STRING_TABLE->Get("UpgradeClipSize"));
 		break;
 	case Upgrades::MaxHp:
-		text.setString("3- INCREASED MAX HEALTH");
+		text.setString(STRING_TABLE->Get("UpgradeMaxHP"));
 		break;
 	case Upgrades::RunSpeed:
-		text.setString("4- INCREASED RUN SPEED");
+		text.setString(STRING_TABLE->Get("UpgradeRunSpeed"));
 		break;
 	case Upgrades::MoreHealth:
-		text.setString("5- MORE AND BETTER HEALTH PICKUPS");
+		text.setString(STRING_TABLE->Get("UpgradeHPPickUp"));
 		break;
 	case Upgrades::MoreAmmo:
-		text.setString("6- MORE AND BETTER AMMO PICKUPS");
+		text.setString(STRING_TABLE->Get("UpgradeAmmoPickUp"));
 		break;
 	}
 	Utils::SetOrigin(text, Origins::TL);

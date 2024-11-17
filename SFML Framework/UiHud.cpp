@@ -48,7 +48,7 @@ void UiHud::Release()
 void UiHud::Reset()
 {
 	float textSize = 50.f;
-	sf::Font& font = FONT_MGR.Get("fonts/zombiecontrol.ttf");
+	sf::Font& font = FONT_MGR.Get("fonts/H2HDRM.TTF");
 	//»ó´Ü
 	textScore.setFont(font);
 	textScore.setCharacterSize(textSize);
@@ -132,17 +132,17 @@ void UiHud::Draw(sf::RenderWindow& window)
 
 void UiHud::SetScore(int s)
 {
-	textScore.setString("SCORE: " + std::to_string(s));
+	textScore.setString(STRING_TABLE->Get("Score") + std::to_wstring(s));
 	Utils::SetOrigin(textScore, Origins::TL);
 }
 
 void UiHud::SetHiScore(int s)
 {
-	textHighScore.setString("HIGH SCORE: " + std::to_string(s));
+	textHighScore.setString(STRING_TABLE->Get("HighScore") + std::to_wstring(s));
 	Utils::SetOrigin(textHighScore, Origins::TR);
 }
 
-void UiHud::SetCenter(std::string str)
+void UiHud::SetCenter(std::wstring str)
 {
 	textCenter.setString(str);
 	Utils::SetOrigin(textCenter, Origins::MC);
@@ -155,7 +155,7 @@ void UiHud::SetUpgrade(int u)
 		textUpgrade.setString("");
 		return;
 	}
-	textUpgrade.setString("Tab To Upgrade...");
+	textUpgrade.setString(STRING_TABLE->Get("UpgradeAlert"));
 	Utils::SetOrigin(textUpgrade, Origins::TC);
 }
 
@@ -166,7 +166,7 @@ void UiHud::SetInterval(int i)
 		textInterval.setString("");
 		return;
 	}
-	textInterval.setString("PREPARE TO DIE... " + std::to_string(i));
+	textInterval.setString(STRING_TABLE->Get("Interval") + std::to_wstring(i));
 	Utils::SetOrigin(textInterval, Origins::BC);
 }
 
@@ -190,12 +190,12 @@ void UiHud::SetHp(int hp, int max)
 
 void UiHud::SetWave(int w)
 {
-	textWave.setString("WAVE: " + std::to_string(w));
+	textWave.setString(STRING_TABLE->Get("Wave") + std::to_wstring(w));
 	Utils::SetOrigin(textWave, Origins::BR);
 }
 
 void UiHud::SetZombieCount(int count)
 {
-	textZombieCount.setString("ZOMBIES: " + std::to_string(count));
+	textZombieCount.setString(STRING_TABLE->Get("Zombies") + std::to_wstring(count));
 	Utils::SetOrigin(textZombieCount, Origins::BR);
 }

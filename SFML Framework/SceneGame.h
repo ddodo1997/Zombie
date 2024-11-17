@@ -39,9 +39,10 @@ protected:
 	ItemMaker* itemMaker;
 
 	sf::Sprite cursor;
+	std::fstream* saveFile;
 
 	int score = 0;
-	static int highScore;
+	int highScore;
 	
 	int currentWave;
 
@@ -51,7 +52,7 @@ protected:
 	float makeDelay = 10.0f;
 	float makeTimer = 0.f;
 	bool makeFlag = false;
-	int upgradeCount = 0;
+	int upgradeCount = 1;
 public:
 	SceneGame();
 	virtual ~SceneGame() = default;

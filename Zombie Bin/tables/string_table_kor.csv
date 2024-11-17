@@ -1,0 +1,16 @@
+ID,Korean
+GameOver,엔터를 눌러 재시작
+Score,점수: 
+HighScore,최고점수: 
+CenterAwake,엔터를 눌러 시작
+CenterPause,ESC를 눌러 재시작
+UpgradeAlert,Tab을 눌러 업그레이드
+Interval,다음 웨이브를 준비하세요! 
+Wave,웨이브: 
+Zombies,남은좀비: 
+UpgradeRateOfFire,1- 발사 속도 증가
+UpgradeClipSize,2- 최대 탄창 증가
+UpgradeMaxHP,3- 최대 체력 증가
+UpgradeRunSpeed,4- 이동속도 증가
+UpgradeHPPickUp,5- 체력 회복량 증가
+UpgradeAmmoPickUp,6- 탄약 획득량 증가

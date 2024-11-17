@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Item.h"
-
+#include "ItemTable.h"
 Item::Item(const std::string& name)
 	: GameObject(name)
 {
@@ -68,21 +68,8 @@ void Item::Draw(sf::RenderWindow& window)
 void Item::SetType(Types type)
 {
 	this->type = type;
-	switch (this->type)
-	{
-	case Types::Ammo:
-		texItemId = "graphics/ammo_pickup.png";
-		break;
-	case Types::AID:
-		texItemId = "graphics/health_pickup.png";
-		break;
-	case Types::AssaultRifle:
-		texItemId = "graphics/assault_rifle.png";
-		body.setScale({ 0.1f,0.1f });
-		break;
-	case Types::ShotGun:
-		texItemId = "graphics/shotgun.png";
-		break;
-	}
+	texItemId = ITEM_TABLE->Get(type).texId;
 	body.setTexture(TEXTURE_MGR.Get(texItemId), true);
+	if (type == Types::AssaultRifle)
+		SetScale({ 0.1f,0.1f });
 }

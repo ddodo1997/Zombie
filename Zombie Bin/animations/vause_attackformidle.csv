@@ -1,0 +1,10 @@
+ID,FPS,"LoopType(0:Single 1:Loop)"
+AttackFormIdle,10,1
+
+TEXTURE,LEFT,TOP,WIDTH,HEIGHT
+graphics/vause_sheet.png,144,0,32,8
+graphics/vause_sheet.png,144,8,32,8
+graphics/vause_sheet.png,144,16,32,8
+graphics/vause_sheet.png,144,24,32,8
+graphics/vause_sheet.png,144,32,32,8
+graphics/vause_sheet.png,144,40,32,8

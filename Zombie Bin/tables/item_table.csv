@@ -1,0 +1,5 @@
+ID(0:Ammo 1:HealPack 2:Assault 3:Shotgun),texId, pickup
+0,graphics/ammo_pickup.png,6,0
+1,graphics/health_pickup.png,0,10
+2,graphics/assault_rifle.png,0,0
+3,graphics/shotgun.png,0,0

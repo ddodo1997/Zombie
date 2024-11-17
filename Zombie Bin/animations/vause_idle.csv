@@ -1,0 +1,10 @@
+ID,FPS,"LoopType(0:Single 1:Loop)"
+Idle,10,1
+
+TEXTURE,LEFT,TOP,WIDTH,HEIGHT
+graphics/vause_sheet.png,32,0,32,8
+graphics/vause_sheet.png,32,8,32,8
+graphics/vause_sheet.png,32,16,32,8
+graphics/vause_sheet.png,32,24,32,8
+graphics/vause_sheet.png,32,32,32,8
+graphics/vause_sheet.png,32,40,32,8
